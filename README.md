@@ -1,6 +1,6 @@
 # sketchBoard 
 
-SVG画板插件，适用与播放器圈点勾画
+SVG画板插件,可以画直线/曲线，切换硬笔/荧光笔, 变换笔颜色，调整线宽，橡皮檫擦除。自适应svg大小，等比例适应不同屏幕。
 
 ## Demo
 ```
@@ -19,11 +19,8 @@ npm run serve
 
 ### 加载技术栈
 
-```html
-<!-- 依赖加载 -->
-<script src="./yxp-ebag/libs/vue/vue.js"></script>
-<!-- 加载sketchBoard -->
-<script src="./yxp-ebag/plugins/sketchBoard/sketchBoard.umd.js"></script>
+```
+npm install Vue vue-svg-board
 ```
 
 

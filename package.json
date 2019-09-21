@@ -4,7 +4,7 @@
   "description": "A SVG sketch board Library",
   "author": "vkbo",
   "email": "vkbo@qq.com",
-  "repository": "github:flaviocopes/testing",
+  "repository": "https://github.com/vkboo/vue-svg-board.git",
   "main": "sketch_board/index.js",
   "scripts": {
     "serve": "vue-cli-service serve",

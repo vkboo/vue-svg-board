@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import { thicknessMap, penStyles, lines, colors } from '@plugin/utils/config';
-import { configValidator } from '@plugin/utils/propsValidator';
+import { thicknessMap, penStyles, lines, colors } from '../utils/config';
+import { configValidator } from '../utils/propsValidator';
 
 export default {
     name: 'SketchPopover',

@@ -14,10 +14,10 @@
 </template>
 
 <script>
-import SketchBoard from '@plugin/lib';
-import { svgToBase64 } from '@plugin/utils/util';
-import { thicknessMap, hThicknessMap } from '@plugin/utils/config';
-import { configValidator } from '@plugin/utils/propsValidator';
+import SketchBoard from '../lib';
+import { svgToBase64 } from '../utils/util';
+import { thicknessMap, hThicknessMap } from '../utils/config';
+import { configValidator } from '../utils/propsValidator';
 export default {
     name: 'SketchBoard',
     props: {

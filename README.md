@@ -1,4 +1,4 @@
-# sketchBoard 
+# vue-svg-board 
 
 SVG画板插件,可以画直线/曲线，切换硬笔/荧光笔, 变换笔颜色，调整线宽，橡皮檫擦除。自适应svg大小，等比例适应不同屏幕。
 
@@ -51,7 +51,7 @@ npm install Vue vue-svg-board
 </template>
 
 <script>
-import SketchBoard from '@plugin';
+import SketchBoard from 'vue-svg-board';
 Vue.use(SketchBoard);
 
 export default {
@@ -89,7 +89,7 @@ export default {
 ``` Javascript
 
 import Vue from 'vue';
-import SetchBoard from '@plugin/setchBoard';
+import SketchBoard from 'vue-svg-board';
 Vue.use(SketchBoard, {
     bezier: true, // 开启贝塞尔曲线
     ref: true, // 开启requestAnimationFrame API

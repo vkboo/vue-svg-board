@@ -1,5 +1,5 @@
 
-import { thicknessMap, penStyles, lines } from '@plugin/utils/config';
+import { thicknessMap, penStyles, lines } from '../utils/config';
 export const configValidator = value => {
     let flag = false;
     const shouldKeys = ['thickness', 'pen', 'line', 'color'];

@@ -5,11 +5,11 @@
   "author": "vkbo",
   "email": "vkbo@qq.com",
   "repository": "https://github.com/vkboo/vue-svg-board.git",
-  "main": "sketch_board/index.js",
+  "main": "dist/sketchBoard.umd.min.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "umd": "vue-cli-service build --target lib --name sketchBoard --dest ./dist/1.0.0 sketch_board/index.js",
+    "umd": "vue-cli-service build --target lib --name sketchBoard --dest ./dist sketch_board/index.js",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },

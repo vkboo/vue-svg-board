@@ -64,6 +64,7 @@ export default {
         _handle (type, value) {
             this.$emit('update:config', Object.assign({}, this.config, {
                 [type]: value,
+                mode: 1, // 点击之后，肯定是绘制模式
             }));
         },
     },
@@ -120,7 +121,7 @@ $points-map: (
     }
     cursor: pointer;
     &.on {
-      background-color: #4edbf9;
+      background-color: #4d95fb;
     }
     $attr: small middle large;
     @each $item in $attr {

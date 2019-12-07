@@ -52,10 +52,6 @@ export default {
             validator: value => value.every(itm => typeof itm === 'string'),
             default: () => Object.values(hThicknessMap),
         },
-        isDelete: { // 是否为对象擦除模式
-            type: Boolean,
-            required: true,
-        },
         config: { // 绘制属性的配置
             type: Object,
             validator: configValidator,
@@ -98,12 +94,9 @@ export default {
         // watch画板各属性的变化，然后改变画板的属性表现
         'config': {
             deep: true,
-            handler () {
+            handler (newVal, oldVal) {
                 this._updateAttr();
             },
-        },
-        'isDelete' () {
-            this._updateAttr();
         },
         // svg尺寸发生变化,重新计算绘制坐标
         'width'  (newVal) {
@@ -145,7 +138,7 @@ export default {
             this.sketch.color = this.config.color;
             this.sketch.shape = this.config.line;
             this.sketch.penStyle = this.config.pen;
-            this.sketch.isDeleteMode = this.isDelete;
+            this.sketch.mode = this.config.mode;
         },
         /**
          * @desc 撤销
@@ -164,6 +157,12 @@ export default {
          */
         clear () {
             this.sketch.clear();
+        },
+        /**
+         * @desc 获取svg的矢量数据
+         */
+        getData () {
+            return this.sketch.graphAry;
         },
         /**
          * @desc 根据指定的svg数据格式进行回显

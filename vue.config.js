@@ -1,7 +1,20 @@
 const path = require('path');
+const webpack = require('webpack');
 
 function resolve (dir) {
     return path.join(__dirname, dir);
+}
+
+function getDateTime () {
+    var d, s;
+    d = new Date();
+    s = d.getFullYear(); // 取年份
+    s += '/' + ('0' + (d.getMonth() + 1)).substr(-2);// 取月份
+    s += '/' + ('0' + d.getDate()).substr(-2); // 取日期
+    s += ' ' + ('0' + d.getHours()).substr(-2); // 取小时
+    s += ':' + ('0' + d.getMinutes()).substr(-2); // 取分
+    // s += ':' + ('0' + d.getSeconds()).substr(-2); // 取秒
+    return s;
 }
 
 module.exports = {
@@ -37,9 +50,11 @@ module.exports = {
             .set('@', resolve('examples'));
         // 这里只写了两个个，你可以自己再加，按这种格式.set('', resolve(''))
     },
-    configureWebpack: {
-        output: {
-            libraryExport: 'default',
-        },
+    configureWebpack: config => {
+        let pluginBanner = [
+            new webpack.BannerPlugin(`Build Time = ${getDateTime()}`),
+        ];
+        config.output.libraryExport = 'default';
+        config.plugins = [...config.plugins, ...pluginBanner];
     },
 };

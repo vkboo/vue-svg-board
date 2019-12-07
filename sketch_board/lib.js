@@ -5,6 +5,7 @@ export default class {
         this.color = null;
         this.shape = null;
         this.width = null;
+        this.mode = null; // 当前模式 0:删除模式 1:绘制模式 2:选择模式(暂无此功能)
         this.opacity = 0.3; // 荧光笔的透明度
         this.penStyle = null; // highlighters荧光笔 || pencil铅笔
         this.onBezier = null; // 是否开启了bezier
@@ -20,7 +21,6 @@ export default class {
         this.records = [[]]; // 画板历史记录
         this.records[0]._pointer = true; // 空白画板默认指针指在第一个空数组
         this.iteId = 0; // id自增
-        this.isDeleteMode = false; // 是否处于擦除模式
         this.deleting = false; // 鼠标按下，正在擦除
         this.svg = svgDom; // svg DOM
         this._renderDefault(options);
@@ -28,6 +28,8 @@ export default class {
         this.svg.addEventListener(this.isMobile ? 'touchstart' : 'mousedown', this._regDownEvent, false);
         this.svg.addEventListener(this.isMobile ? 'touchend' : 'mouseup', this._regUpEvent, false);
         this.svg.addEventListener(this.isMobile ? 'touchmove' : 'mousemove', this._regMoveEvent, false);
+        // 解决鼠标移出画布后放开，在进入画布继续绘制的问题
+        document.addEventListener(this.isMobile ? 'touchend' : 'mouseup', this._regUpEvent, false);
     }
 
     /** 赋予默认属性 */
@@ -36,6 +38,7 @@ export default class {
         this.shape = options.shape || 'curve';
         this.width = options.width || '2px';
         this.penStyle = options.penStyle || 'pencil';
+        this.mode = options.mode || 1;
         this.onBezier = options.onBezier !== undefined ? options.onBezier : true;
         this.onRaf = options.onRaf !== undefined ? options.onRaf : true;
     }
@@ -70,12 +73,13 @@ export default class {
         }
         offsetX = offsetX * this.ratioX;
         offsetY = offsetY * this.ratioY;
-        if (this.isDeleteMode) {
+        if (this.mode === 0) {
             // 擦除模式
             this.deleting = true;
             let target = this._gotNearTarget({ x: offsetX, y: offsetY, isMove: false });
             target && this._erase(target);
-        } else {
+        } else if (this.mode === 1) {
+            // 绘制模式
             this.drawStart.x = offsetX;
             this.drawStart.y = offsetY;
             this.moveStart.x = offsetX;
@@ -90,7 +94,7 @@ export default class {
      */
     _regUpEvent = () => {
         this.deleting = false;
-        if (this.drawing && !this.isDeleteMode) {
+        if (this.drawing && this.mode === 1) {
             this.drawing = false;
             this.currentGraph = null;
             this.points = [];
@@ -120,17 +124,17 @@ export default class {
         offsetX = offsetX * this.ratioX;
         offsetY = offsetY * this.ratioY;
 
-        if (this.isDeleteMode) {
+        if (this.mode === 0) {
             if (this.deleting) {
                 // 擦除模式
                 let target = this._gotNearTarget({ x: offsetX, y: offsetY, isMove: true });
                 target && this._erase(target);
             }
-        } else {
+        } else if (this.mode === 1) {
             this.offset.x = offsetX;
             this.offset.y = offsetY;
             if (this.drawing) {
-            // 正在绘制
+                // 正在绘制
                 if (this.onRaf) {
                     !this.animationFrame && (this.animationFrame = requestAnimationFrame(this._renderByReqAniFrame.bind(this)));
                 } else {

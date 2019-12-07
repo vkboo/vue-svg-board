@@ -28,24 +28,68 @@ npm install Vue vue-svg-board
 ```html
 <template>
   <div id="app">
-    <sketch-board
-      ref="sketch_ref"
-      :width="1000"
-      :height="600"
-      :is-delete="board.deleteMode"
-      :config="board.config"
-      :opacity="0.8"
-      :on-load="loadedSketch"
-    />
+    <div class="sketch-wrap">
+      <sketch-board
+        class="sketch-board"
+        :width="board.width"
+        :height="board.height"
+        view-box="0 0 1024 600"
+        :config="board.config"
+        :opacity="0.2"
+        :on-load="loadedSketch"
+        :ignore="board.ignore"
+        :on-up-event="handlePressUp"
+      />
+      <button
+        class="btn-test"
+        @click="handleStrike"
+      >
+        测试穿透
+      </button>
+    </div>
+    <div class="buttons-wrap">
+      <button
+        @click="exportPng"
+      >
+        导出图片
+      </button>
+      |
+      <button @click="board.ignore = !board.ignore">
+        当前画板穿透状态： {{ board.ignore ? '开启' : '关闭' }}
+      </button>
+      |
+      <button @click="changeBoardSize">
+        切换画布大小
+      </button>
+      |
+      <button @click="saveToLocal">
+        存储当前svg矢量数据到localstorage
+      </button>
+      |
+      <button @click="getFromLocal">
+        读取数据到画布
+      </button>
+      |
+      <button @click="sketch.revoke()">
+        撤销
+      </button>
+      |
+      <button @click="sketch.resume()">
+        恢复
+      </button>
+    </div>
     <div class="tools">
-        <sketch-popover
-          :config.sync="board.config"
-          class="sketch-tool-board"
-        />
-        <erase-popover
-          @clear="clearSVG"
-          @erase="board.deleteMode = true"
-        />
+      <sketch-popover
+        key="sketch"
+        :config.sync="board.config"
+        class="sketch-tool-board"
+      />
+      <erase-popover
+        key="erase"
+        class="erase-popover"
+        @clear="clearSVG"
+        @erase="handleErase"
+      />
     </div>
   </div>
 </template>
@@ -53,35 +97,136 @@ npm install Vue vue-svg-board
 <script>
 import SketchBoard from 'vue-svg-board';
 Vue.use(SketchBoard);
-
 export default {
     name: 'App',
     data () {
         return {
             board: {
-                deleteMode: false,
+                width: 1024,
+                height: 600,
                 config: {
-                    thickness: 'middle',
+                    thickness: 'small',
                     pen: 'pencil',
                     line: 'curve',
                     color: '#000000',
+                    mode: 1,
                 },
+                ignore: false,
             },
         };
     },
-    mounted () {
-        this.sketch = this.$refs.sketch_ref;
-    },
     methods: {
-        loadedSketch (sketch) {
-          this.sketch = sketch;
+        handleStrike () {
+            window.alert('click!');
+        },
+        changeBoardSize () {
+            const oldWidth = this.board.width;
+            const oldHeight = this.board.height;
+
+            Object.assign(this.board, {
+                width: oldWidth === 512 ? 1024 : 512,
+                height: oldHeight === 300 ? 600 : 300,
+            });
+            // this.sketch.resize();
+        },
+        exportPng () {
+            this.sketch.toBase64()
+                .then(res => {
+                    console.log(res);
+                })
+                .catch(err => {
+                    console.log('err>>>', err);
+                });
         },
         clearSVG () {
             this.sketch.clear();
         },
+        loadedSketch (sketch) {
+            console.log('--- 画板初始化回调start: 因为插件内部需要确定尺寸后，才会初始化，这是一个异步的过程，所以抛出一个方法，用户获取画板vue对象 ---');
+            console.log(sketch);
+            console.log('--- 画板初始化回调end ---');
+            this.sketch = sketch;
+        },
+        handlePressUp (params) {
+            console.log('--- start: 手势抬起，用于回调操作画板的开始/结束时间信息数据 ---');
+            console.log(params);
+            console.log('--- end ---');
+        },
+        handleErase () {
+            this.board.config.mode = 0;
+        },
+        saveToLocal () {
+            localStorage.setItem('yxp-svg-data', JSON.stringify(this.sketch.getData()));
+        },
+        getFromLocal () {
+            let localData = localStorage.getItem('yxp-svg-data');
+            if (localData) {
+                const data = JSON.parse(localData);
+                this.sketch.clear();
+                this.sketch.render(data);
+            }
+        },
     },
 };
 </script>
+
+<style lang="scss">
+ body {
+   background: rgb(240, 240, 240);
+ }
+
+.sketch-wrap {
+  position: relative;
+}
+
+.sketch-board {
+  position: relative;
+  z-index: 1;
+  margin: auto;
+  background-color: #ffc0cb6b;
+}
+
+.tools {
+  position:fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  z-index: 2;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+
+.btn-test {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+// 动画
+.slightly-enter-active {
+  transition: all .2s ease;
+}
+
+.slightly-leave-active {
+  transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slightly-enter, .slightly-leave-to {
+  transform: translate3d(0, 15px, 0);
+  opacity: 0;
+}
+</style>
+
 ```
 
 ### 全局配置
@@ -108,11 +253,11 @@ Vue.use(SketchBoard, {
 `opacity`     | 荧光笔的透明度  | `Number`   | `0-1` | `0.3` | 否
 `thicknessess`     | 铅笔的3中粗细集合  | `Array<String>[]`   | - | `['2px', '4px', '8px']` | 否
 `h—thicknessess`     | 荧光笔的3中粗细集合  | `Array<String>[]`   | - | `['4px', '8px', '16px']` | 否
-`is-delete`     | 是否为对象擦除模式  | `Boolean`   | `true, false` | `true` | 否
 `config.thickness`     | 线粗度  | `String`   | `small, middle, large` | - | 是
 `config.pen`     | 笔形状  | `String`   | `pencil, highlighters` | - | 是
 `config.line`     | 线型  | `String`   | `curve, stright` | - | 是
 `config.color`     | 线颜色  | `String`   | (从给sketchColors中选一种颜色，如果没有配置，则是`#000000, #ff1000, #326ed9, #ffc510, #306c00, #ff1ecf`) | - | 是
+`config.mode`     | 线型  | `Number`   | `0 | 1` | - | 是
 `on-load`     | 画板初始化完成  | `Function(sketchVm)`   | - | - | 否
 `on-up-event`     | 手势抬起，用于回调操作画板的开始/结束时间信息数据  | `Function(Object)`   | - | - | 否
 
@@ -124,6 +269,7 @@ Vue.use(SketchBoard, {
 `resume`     | 恢复操作(暂时没用到)  | - | -
 `clear`     | 清除画板  | - | -
 `render`     | 根据指定的svg数据格式进行回显(暂时没用到)  | data | -
+`getData`     | 获取svg的矢量数据(暂时没用到)  | - | -
 `resize`     | 动态改变画板大小，修复画笔触点坐标  | - | -
 
 ---
@@ -164,3 +310,10 @@ Vue.use(SketchBoard, {
 * 荧光笔下粗线改动
 * 优化细线的擦除
 
+#### 1.1.0
+* 查看构建版本时间
+* 新UI
+* 补充demo用例
+* 绘制模式解耦
+* 增加获取画布数据的结构
+* bug修复：解决鼠标移出画布后放开，在进入画布继续绘制的问题

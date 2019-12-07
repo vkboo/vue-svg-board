@@ -4,13 +4,13 @@
       <div
         v-for="(item, index) of tools"
         :key="index"
-        class="item"
+        :class="['item', item.type === current && 'on']"
         @mousedown="_handleDown(item.type)"
         @touchstart="_handleDown(item.type)"
         @mouseup="_handleUp(item.type)"
         @touchend="_handleUp(item.type)"
       >
-        <i :class="['icon', item.type, item.type === current && 'on']" />
+        <i :class="['icon', item.type]" />
         <span class="text">{{ item.text }}</span>
       </div>
     </div>
@@ -64,27 +64,36 @@ $border-color: #f0f0f0;
   user-select: none;
   .item {
     display: flex;
+    width: 56px;
+    height: 56px;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    &.on {
+      background: url(../assets/selectbackground.png);
+    }
     .icon {
       display: inline-block;
       vertical-align: middle;
+      position: relative;
+      top: 6px;
       width: 28px;
       height: 28px;
       @each $item in erase clear {
         &.#{$item} {
           background: url(../assets/#{$item}.png);
-          &.on {
-            background: url(../assets/#{$item}-selected.png);
-          }
         }
       }
     }
     .text {
-      font-size: 16px;
+      display: inline-block;
+      width: 56px;
+      text-align: center;
+      font-size: 12px;
       color: #666666;
+      position: relative;
+      bottom: 6px;
     }
   }
 }

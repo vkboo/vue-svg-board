@@ -18,5 +18,8 @@ export const penStyles = ['pencil', 'highlighters'];
 // 线型
 export const lines = ['curve', 'stright'];
 
+// 画板模式 0:删除模式 1:绘制模式 2:选择模式(暂无)
+export const modes = [0, 1, 2];
+
 // 画板选择器上的各种颜色
 export const colors = ['#000000', '#ff1000', '#326ed9', '#ffc510', '#306c00', '#ff1ecf'];

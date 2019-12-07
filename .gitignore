@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
-/dist
+# main file is here
+# /dist
 
 # local env files
 .env.local
